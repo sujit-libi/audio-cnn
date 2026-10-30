@@ -44,9 +44,9 @@ class ESC50Dataset(Dataset):
         self.transform = transform
 
         if split == 'train':
-            self.metadata = self.metadata[self.metadata['fold'] != 5]
+            self.metadata = self.metadata[self.metadata['fold'] != 5].copy()
         else:
-            self.metadata = self.metadata[self.metadata['fold'] == 5]
+            self.metadata = self.metadata[self.metadata['fold'] == 5].copy()
 
         self.classes = sorted(self.metadata['category'].unique())
         self.class_to_idx = {cls: idx for idx, cls in enumerate(self.classes)}
@@ -136,8 +136,10 @@ def train():
     print(f"Training samples: {len(train_dataset)}")
     print(f"Val samples: {len(val_dataset)}")
 
-    train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    test_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
+    train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True,
+                                  num_workers=4, pin_memory=True)
+    test_dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False,
+                                 num_workers=4, pin_memory=True)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = AudioCNN(num_classes=len(train_dataset.classes))

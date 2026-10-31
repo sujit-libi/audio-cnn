@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { arrayBuffer } from "stream/consumers";
 import ColorScale from "~/components/ColorScale";
 import FeatureMap from "~/components/FeatureMap";
 import { Badge } from "~/components/ui/badge";

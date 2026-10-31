@@ -4,12 +4,12 @@ const FeatureMap = ({
   data,
   title,
   internal,
-  spectrogram,
+  // spectrogram,
 }: {
   data: number[][];
   title: string;
   internal?: boolean;
-  spectrogram?: boolean;
+  // spectrogram?: boolean;
 }) => {
   if (!data || !data.length || !data[0]?.length) return null;
 

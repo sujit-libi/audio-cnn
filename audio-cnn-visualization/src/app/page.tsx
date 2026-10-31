@@ -19,9 +19,11 @@ interface LayerData {
   values: number[][];
 }
 
-interface VisualizationData {
-  [layerName: string]: LayerData;
-}
+// interface VisualizationData {
+//   [layerName: string]: LayerData;
+// }
+
+type VisualizationData = Record<string, LayerData>;
 
 interface WaveformData {
   values: number[];
@@ -90,7 +92,7 @@ const ESC50_EMOJI_MAP: Record<string, string> = {
 };
 
 const getEmojiForClass = (className: string): string => {
-  return ESC50_EMOJI_MAP[className] || "🔈";
+  return ESC50_EMOJI_MAP[className] ?? "🔈";
 };
 
 function splitLayers(visualization: VisualizationData) {
@@ -104,7 +106,7 @@ function splitLayers(visualization: VisualizationData) {
       if (parent === undefined) continue;
 
       if (!internals[parent]) internals[parent] = [];
-      internals[parent].push([name, data]);
+      (internals[parent] ??= []).push([name, data]);
     }
   }
 
@@ -153,7 +155,9 @@ export default function HomePage() {
         );
 
         if (!response.ok) {
-          throw new Error(`API error ${response.statusText}`);
+          throw new Error(
+            `Audio API request failed: ${response.status} error ${response.statusText}`.trim(),
+          );
         }
 
         const data: ApiResponse = await response.json();
@@ -184,7 +188,8 @@ export default function HomePage() {
             CNN Audio Visualizer
           </h1>
           <p className="text-md mb-8 text-stone-600">
-            Upload a WAV file to see the model's predictions and feature maps
+            Upload a WAV file to see the model&apos;s predictions and feature
+            maps
           </p>
           <div className="flex flex-col items-center">
             <div className="relative inline-block">
@@ -265,7 +270,7 @@ export default function HomePage() {
                 <CardContent>
                   {/** Feature Map */}
                   <FeatureMap
-                    spectrogram={true}
+                    // spectrogram={true}
                     data={vizData.input_spectrogram.values}
                     title={`${vizData.input_spectrogram.shape.join(" x ")}`}
                   />

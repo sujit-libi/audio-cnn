@@ -126,6 +126,7 @@ class AudioClassifier:
             clean_spectrogram = np.nan_to_num(spectrogram_np)
 
             max_samples = 8000
+            waveform_sample_rate = 44100
             if len(audio_data) > max_samples:
                 step = len(audio_data) // max_samples
                 waveform_data = audio_data[::step]
@@ -141,8 +142,8 @@ class AudioClassifier:
             },
             "waveform": {
                 "values": waveform_data.tolist(),
-                "sample_rate": 22050,
-                "duration": len(audio_data) / 22050
+                "sample_rate": waveform_sample_rate,
+                "duration": len(audio_data) / waveform_sample_rate
             }
         }
 

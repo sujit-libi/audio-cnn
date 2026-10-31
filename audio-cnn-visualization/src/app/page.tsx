@@ -105,12 +105,30 @@ function splitLayers(visualization: VisualizationData) {
       const [parent] = name.split(".");
       if (parent === undefined) continue;
 
-      if (!internals[parent]) internals[parent] = [];
+      // if (!internals[parent]) internals[parent] = [];
       (internals[parent] ??= []).push([name, data]);
     }
   }
 
   return { main, internals };
+}
+
+function isApiResponse(data: unknown): data is ApiResponse {
+  if (typeof data !== "object" || data === null) {
+    return false;
+  }
+
+  const response = data as Record<string, unknown>;
+
+  return (
+    Array.isArray(response.predictions) &&
+    typeof response.visualization === "object" &&
+    response.visualization !== null &&
+    typeof response.input_spectrogram === "object" &&
+    response.input_spectrogram !== null &&
+    typeof response.waveform === "object" &&
+    response.waveform !== null
+  );
 }
 
 export default function HomePage() {
@@ -160,7 +178,12 @@ export default function HomePage() {
           );
         }
 
-        const data: ApiResponse = await response.json();
+        const data: unknown = await response.json();
+
+        if (!isApiResponse(data)) {
+          throw new Error("Invalid response received from the audio API.");
+        }
+
         setVizData(data);
       } catch (error) {
         setError(
